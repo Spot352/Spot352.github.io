@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .center-text {
     font-family: Arial, sans-serif;
     color: white;
@@ -9,4 +10,183 @@
     background-color: #000000;
     padding: 20px;
     border-radius: 5px;
+=======
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    /* A modern, clean sans-serif font */
+    line-height: 1.6;
+    color: #333;
+    /* Darker text for readability */
+    background-color: #f4f7f6;
+    /* Light background */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* Ensures footer sticks to bottom on short content pages */
+}
+
+/* Header Styling */
+.header-section {
+    background-color: #ffffff;
+    padding: 30px 20px;
+    /* Slightly reduced padding */
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for depth */
+    margin-bottom: 25px;
+    /* Slightly reduced margin */
+}
+
+.main-title {
+    font-size: 2.2em;
+    /* Reduced from 2.8em */
+    color: #2c3e50;
+    /* Dark blue/grey for headings */
+    margin-bottom: 8px;
+    /* Slightly reduced margin */
+    font-weight: 700;
+    /* Bold for emphasis */
+}
+
+.subtitle {
+    font-size: 1em;
+    /* Reduced from 1.2em */
+    color: #7f8c8d;
+    /* Lighter text for subtitle */
+    max-width: 700px;
+    /* Slightly reduced max-width */
+    margin: 0 auto;
+}
+
+/* Main Content Section */
+.content-section {
+    background-color: #555555;
+    /* Darker grey background for content */
+    color: #ffffff;
+    /* White text for contrast */
+    width: 90%;
+    /* Use percentage for responsiveness */
+    max-width: 700px;
+    /* Max width to prevent content from stretching too wide */
+    padding: 40px;
+    /* Reduced padding */
+    margin: 0 auto 25px auto;
+    /* Center the div and add bottom margin */
+    text-align: center;
+    border-radius: 10px;
+    /* Slightly rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* More pronounced shadow */
+    flex-grow: 1;
+    /* Allows content section to grow and push footer down */
+}
+
+.project-status {
+    font-size: 2em;
+    /* Reduced from 2.5em */
+    font-weight: 700;
+    margin-bottom: 25px;
+    /* Space between text and link */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    /* Subtle text shadow */
+}
+
+/* Link Styling */
+.history-link {
+    display: inline-block;
+    /* Allows padding and margin */
+    background-color: #3498db;
+    /* A vibrant blue button */
+    color: white;
+    padding: 12px 25px;
+    /* Reduced padding */
+    text-decoration: none;
+    /* Remove underline */
+    border-radius: 5px;
+    /* Rounded button corners */
+    font-size: 1em;
+    /* Reduced from 1.1em */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    /* Smooth transition for hover effect */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.history-link:hover {
+    background-color: #2980b9;
+    /* Darker blue on hover */
+    transform: translateY(-2px);
+    /* Slight lift effect on hover */
+}
+
+/* Footer Styling */
+.footer-section {
+    background-color: #333;
+    color: #f4f7f6;
+    text-align: center;
+    padding: 18px;
+    /* Slightly reduced padding */
+    font-size: 0.85em;
+    /* Slightly reduced font size */
+    margin-top: auto;
+    /* Pushes footer to the bottom */
+}
+
+/* Project Entry Styling */
+.project-entry {
+    background-color: rgba(255, 255, 255, 0.1);
+    /* Slightly transparent white background */
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+    /* Space between the project and the 'Back to Main' link */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    /* Inner shadow for a subtle effect */
+}
+
+.project-entry h3 {
+    font-size: 1.8em;
+    /* Size for project title */
+    color: #ffffff;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.project-entry p {
+    font-size: 1.1em;
+    color: #e0e0e0;
+    /* Slightly lighter white for description */
+    margin-bottom: 25px;
+    max-width: 500px;
+    /* Limit width for readability */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Project Link Styling (reusing button aesthetics) */
+.project-link {
+    display: inline-block;
+    background-color: #27ae60;
+    /* A pleasant green for a 'launch' button */
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.project-link:hover {
+    background-color: #229954;
+    /* Darker green on hover */
+    transform: translateY(-2px);
+}
+
+/* Ensure the 'Back to Main Website' link maintains its margin from the new project entry */
+.content-section .history-link {
+    margin-top: 20px;
+    /* Adjust as needed */
+>>>>>>> 45513c6 (Initial commit of project folder)
 }

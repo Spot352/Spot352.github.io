@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Vocabulary Learning System - Page Mode with Audio</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="container">
+            <!-- Add this navigation bar to learn.html -->
+            <div class="nav-bar">
+                <a href="index.html" class="nav-link">🏠 Home</a>
+                <a href="practice.html" class="nav-link">✏️ Practice Mode</a>
+                <span class="nav-current">📖 Learning Mode</span>
+            </div>
+            <div class="header">
+                <h1>📚 Vocabulary Learning System</h1>
+                <p>Study mode - Page-based learning with pronunciation</p>
+            </div>
+            <!-- File Selector Section -->
+            <div class="selector-section">
+                <div class="selector-group">
+                    <label for="setSelect">Set:</label>
+                    <select id="setSelect">
+                        <option value="1">Set 1</option>
+                    </select>
+                </div>
+                <div class="selector-group">
+                    <label for="partSelect">Part:</label>
+                    <select id="partSelect">
+                        <option value="1">Part 1</option>
+                    </select>
+                </div>
+                <button id="loadBtn" class="btn-load">📖 Load
+                    Vocabulary</button>
+                <button id="showPassagesBtn" class="btn-passages"
+                    style="display:none;">📚 Show Passages</button>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats" id="stats" style="display:none;">
+                <div>Total Words: <span id="totalWords">0</span></div>
+                <div>Current Page: <span id="currentPage">0</span> / <span
+                        id="totalPages">0</span></div>
+                <div>Words per page:
+                    <select id="wordsPerPage" class="page-size-select">
+                        <option value="1">1</option>
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="page-container" id="pageContainer"
+                style="display:none;">
+                <div class="page-header">
+                    <button id="prevPageBtn" class="page-nav-btn">◀ Previous
+                        Page</button>
+                    <span class="page-indicator" id="pageIndicator"></span>
+                    <button id="nextPageBtn" class="page-nav-btn">Next Page
+                        ▶</button>
+                </div>
+
+                <div id="wordsList" class="words-list"></div>
+
+                <div class="page-footer">
+                    <button id="prevPageBtnBottom" class="page-nav-btn">◀
+                        Previous Page</button>
+                    <button id="nextPageBtnBottom" class="page-nav-btn">Next
+                        Page ▶</button>
+                </div>
+            </div>
+
+            <!-- Passages Modal -->
+            <div id="passagesModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>📖 Reading Passages</h2>
+                        <span class="close-modal">&times;</span>
+                    </div>
+                    <div class="passages-container" id="passagesContainer">
+                        <div class="loading">Loading passages...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyboard Hint -->
+            <div class="keyboard-hint">
+                ⌨️ Keyboard shortcuts:
+                <kbd>←</kbd> Previous Page |
+                <kbd>→</kbd> Next Page |
+                <kbd>🔊</kbd> Click any speaker icon to hear pronunciation |
+                <kbd>📚</kbd> Click "Show Passages" to read full texts
+            </div>
+        </div>
+
+        <script src="learn.js"></script>
+    </body>
+</html>

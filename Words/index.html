@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Learning Suite - Main Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-features {
+            list-style: none;
+            text-align: left;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .card-features li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-features li::before {
+            content: "✓";
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #ed8936;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-top: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Vocabulary Learning Suite</h1>
+            <p>Master your vocabulary with interactive tools</p>
+        </div>
+
+        <div class="cards-container">
+            <!-- Learn Card -->
+            <a href="learn.html" class="card">
+                <div class="card-icon">📖</div>
+                <h2>Vocabulary Learning System</h2>
+                <p>Study words with example sentences and Chinese meanings</p>
+                <ul class="card-features">
+                    <li>Page-based word browsing</li>
+                    <li>Audio pronunciation for each word</li>
+                    <li>Example sentences for context</li>
+                    <li>Reading passages included</li>
+                    <li>Adjustable words per page</li>
+                </ul>
+                <div class="badge">Best for studying</div>
+            </a>
+
+            <!-- Practice Card -->
+            <a href="practice.html" class="card">
+                <div class="card-icon">✏️</div>
+                <h2>Vocabulary Practice System</h2>
+                <p>Test your knowledge with interactive exercises</p>
+                <ul class="card-features">
+                    <li>Type answers instead of multiple choice</li>
+                    <li>Random mix of English ↔ Chinese</li>
+                    <li>Fuzzy Chinese matching (60% threshold)</li>
+                    <li>Color-coded performance scores</li>
+                    <li>Review incorrect answers</li>
+                </ul>
+                <div class="badge">Best for testing</div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>💡 Tip: Start with Learning mode, then test yourself with Practice mode</p>
+            <p>⌨️ Both modes support keyboard shortcuts for efficient learning</p>
+        </div>
+    </div>
+</body>
+</html>
