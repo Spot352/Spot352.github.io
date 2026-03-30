@@ -1,5 +1,12 @@
-.center {
+.center-text {
     font-family: Arial, sans-serif;
+    color: white;
     text-align: center;
     margin-top: 20px;
+}
+
+.standard-background {
+    background-color: #000000;
+    padding: 20px;
+    border-radius: 5px;
 }
