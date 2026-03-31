@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-.center-text {
-    font-family: Arial, sans-serif;
-    color: white;
-    text-align: center;
-    margin-top: 20px;
-}
-
-.standard-background {
-    background-color: #000000;
-    padding: 20px;
-    border-radius: 5px;
-=======
 body {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
@@ -188,5 +175,4 @@ body {
 .content-section .history-link {
     margin-top: 20px;
     /* Adjust as needed */
->>>>>>> 45513c6 (Initial commit of project folder)
 }

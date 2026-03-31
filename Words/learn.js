@@ -1,6 +1,6 @@
 // Configuration
 const SETS = 1;
-const PARTS = [2]; // Part 1 has 2 files
+const PARTS = [4]; // Part 1 has 4 files
 
 // Global variables
 let vocabulary = [];
