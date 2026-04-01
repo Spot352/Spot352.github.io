@@ -1,6 +1,6 @@
 // Configuration
 const SETS = 1;
-const PARTS = [4];
+const PARTS = [5];
 
 // Global variables
 let vocabulary = [];
