@@ -1,11 +1,11 @@
 // Configuration
-const SETS = 3;
-const PARTS = [5, 3, 3];
+const SETS = 4;
+const PARTS = [5, 3, 3, 3];
 
 // Global variables
 let vocabulary = [];
 let currentQuestion = null;
-let currentMode = 'random'; // 'random', 'chinese', 'english'
+let currentMode = 'chinese'; // 'random', 'chinese', 'english'
 let score = {
     correct: 0,
     total: 0,
@@ -405,7 +405,7 @@ function loadQuestion() {
         hintArea.innerHTML = `
             <div class="sentence-hint">
                 <p>💡 <strong>Example sentence:</strong></p>
-                <p>${escapeHtml(currentQuestion.sentence1)}</p>
+                <p>(Hint removed after version 4)</p>
                 ${currentQuestion.type ? `<p>📖 <strong>Word type:</strong> ${escapeHtml(currentQuestion.type)}</p>` : ''}
             </div>
         `;
