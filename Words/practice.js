@@ -291,7 +291,7 @@ function loadQuestion() {
     hintArea.innerHTML = `
         <div class="sentence-hint">
             ${currentQuestion.type ? `<p>📖 <strong>Word type:</strong> ${escapeHtml(currentQuestion.type)}</p>` : ''}
-            ${currentQuestion.sentence1 ? `<p>💡 <strong>Hint:</strong> ${escapeHtml(currentQuestion.sentence1)}</p>` : ''}
+            ${currentQuestion.sentence1 ? `<p>💡 <strong>Hint:</strong> Hint Removed After Version 4. </p>` : ''}
         </div>
     `;
     
