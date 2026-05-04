@@ -5,6 +5,331 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Vocabulary Practice Mode - Chinese to English</title>
         <link rel="stylesheet" href="styles.css">
+        <style>
+            .practice-container {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+
+            .question-card {
+                background: white;
+                border-radius: 20px;
+                padding: 40px;
+                text-align: center;
+                animation: slideIn 0.3s ease-out;
+            }
+
+            .question-text {
+                font-size: 1.8em;
+                color: #333;
+                margin-bottom: 20px;
+                line-height: 1.4;
+                word-wrap: break-word;
+            }
+
+            .chinese-display {
+                font-size: 1.5em;
+                color: #764ba2;
+                margin: 20px 0;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 15px;
+                font-family: 'Noto Sans CJK SC', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+                line-height: 1.5;
+                word-wrap: break-word;
+                white-space: normal;
+            }
+
+            .input-area {
+                margin: 30px 0;
+            }
+
+            .answer-input {
+                width: 100%;
+                padding: 15px;
+                font-size: 1.1em;
+                border: 2px solid #e5e7eb;
+                border-radius: 10px;
+                font-family: inherit;
+                transition: border-color 0.3s;
+            }
+
+            .answer-input:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+            .feedback-area {
+                margin: 20px 0;
+                padding: 15px;
+                border-radius: 10px;
+                font-weight: bold;
+                animation: fadeIn 0.3s;
+            }
+
+            .feedback-correct {
+                background: #c6f6d5;
+                color: #22543d;
+            }
+
+            .feedback-wrong {
+                background: #fed7d7;
+                color: #742a2a;
+            }
+
+            .check-btn {
+                padding: 12px 30px;
+                font-size: 1.1em;
+                margin: 10px;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-weight: bold;
+                background: #667eea;
+                color: white;
+            }
+
+            .next-btn {
+                padding: 12px 30px;
+                font-size: 1.1em;
+                margin: 10px;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-weight: bold;
+                background: #48bb78;
+                color: white;
+            }
+
+            .check-btn:hover, .next-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            }
+
+            .progress-bar-container {
+                background: #e5e7eb;
+                border-radius: 10px;
+                height: 30px;
+                margin: 20px 0;
+                overflow: hidden;
+            }
+
+            .progress-bar {
+                background: linear-gradient(90deg, #667eea, #764ba2);
+                height: 100%;
+                transition: width 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+                font-size: 0.9em;
+            }
+
+            .score-stats {
+                display: flex;
+                justify-content: space-around;
+                margin: 20px 0;
+                padding: 15px;
+                background: white;
+                border-radius: 15px;
+                flex-wrap: wrap;
+            }
+
+            .score-item {
+                text-align: center;
+            }
+
+            .score-value {
+                font-size: 2em;
+                font-weight: bold;
+                transition: color 0.3s;
+            }
+
+            .score-value.excellent {
+                color: #006400;
+            }
+
+            .score-value.good {
+                color: #228b22;
+            }
+
+            .score-value.average {
+                color: #ffd700;
+            }
+
+            .score-value.poor {
+                color: #ff0000;
+            }
+
+            .score-label {
+                font-size: 0.9em;
+                color: #666;
+                margin-top: 5px;
+            }
+
+            .sentence-hint {
+                background: #fef3c7;
+                padding: 15px;
+                border-radius: 10px;
+                margin: 20px 0;
+                text-align: left;
+                border-left: 4px solid #f59e0b;
+            }
+
+            .sentence-hint p {
+                margin: 8px 0;
+                color: #92400e;
+                line-height: 1.5;
+            }
+
+            .sentence-hint strong {
+                color: #d97706;
+            }
+
+            .review-section {
+                background: white;
+                border-radius: 20px;
+                padding: 30px;
+                margin-top: 20px;
+                text-align: center;
+            }
+
+            .review-word-list {
+                max-height: 400px;
+                overflow-y: auto;
+                margin: 20px 0;
+            }
+
+            .review-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px;
+                margin: 8px 0;
+                background: #f8f9fa;
+                border-radius: 8px;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .review-item.wrong {
+                background: #fed7d7;
+            }
+
+            .review-word {
+                font-weight: bold;
+                color: #667eea;
+                min-width: 120px;
+            }
+
+            .review-meaning {
+                color: #764ba2;
+                min-width: 150px;
+            }
+
+            .review-answer {
+                font-size: 0.9em;
+                color: #666;
+            }
+
+            .restart-btn {
+                background: #ed8936;
+                color: white;
+                padding: 12px 30px;
+                border: none;
+                border-radius: 10px;
+                font-size: 1.1em;
+                cursor: pointer;
+                margin-top: 20px;
+                transition: all 0.2s;
+                font-weight: bold;
+            }
+
+            .restart-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            }
+
+            #rangeIndicator {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+
+            #rangeIndicator span {
+                background: #667eea;
+                color: white;
+                padding: 5px 15px;
+                border-radius: 20px;
+                font-size: 0.85em;
+            }
+
+            .case-insensitive {
+                font-size: 0.8em;
+                color: #999;
+                margin-top: 5px;
+            }
+
+            .selector-group input[type="number"] {
+                width: 70px;
+                padding: 8px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                font-size: 1em;
+            }
+
+            .selector-group input[type="number"]:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+
+            .shake {
+                animation: shake 0.3s ease-in-out;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            @media (max-width: 768px) {
+                .question-text {
+                    font-size: 1.3em;
+                }
+                
+                .chinese-display {
+                    font-size: 1.2em;
+                }
+                
+                .score-stats {
+                    flex-direction: column;
+                }
+                
+                .review-item {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+            }
+        </style>
     </head>
     <body>
         <div class="container practice-container">
@@ -16,7 +341,7 @@
 
             <div class="header">
                 <h1>✏️ Vocabulary Practice Mode</h1>
-                <p>Chinese → English - Choose a specific part or enter a range</p>
+                <p>Chinese → English - Enter start and end indices to practice</p>
             </div>
 
             <!-- File Selector Section -->

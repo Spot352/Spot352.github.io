@@ -4,17 +4,17 @@ const PARTS = [5, 3, 3, 3, 2];
 
 // Global variables
 let vocabulary = [];
-let selectedVocabulary = []; // Words within the selected range
+let selectedVocabulary = [];
 let currentQuestion = null;
 let score = {
     correct: 0,
     total: 0,
-    answers: [] // Store which words were answered correctly/incorrectly
+    answers: []
 };
 let currentQuestionIndex = 0;
 let questions = [];
 let answered = false;
-let remainingWords = new Set(); // Track words not yet answered correctly
+let remainingWords = new Set();
 
 // DOM elements
 const setSelect = document.getElementById('setSelect');
@@ -42,7 +42,6 @@ const restartBtn = document.getElementById('restartBtn');
 const answerInput = document.getElementById('answerInput');
 const rangeText = document.getElementById('rangeText');
 
-// Function to update score color based on percentage
 function updateScoreColor(element, percentage) {
     element.classList.remove('excellent', 'good', 'average', 'poor');
     
@@ -57,7 +56,6 @@ function updateScoreColor(element, percentage) {
     }
 }
 
-// Initialize
 function initializeSelectors() {
     for (let i = 1; i <= SETS; i++) {
         const option = document.createElement('option');
@@ -71,13 +69,10 @@ function initializeSelectors() {
     setSelect.addEventListener('change', updatePartSelector);
     loadBtn.addEventListener('click', loadVocabulary);
     
-    // Check button
     checkBtn.addEventListener('click', checkAnswer);
     
-    // Next button
     nextBtn.addEventListener('click', nextQuestion);
     
-    // Restart button
     restartBtn.addEventListener('click', () => {
         resetPractice();
         generateQuestions();
@@ -85,14 +80,12 @@ function initializeSelectors() {
         reviewSection.style.display = 'none';
     });
     
-    // Enter key on input
     answerInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !answered) {
             checkAnswer();
         }
     });
     
-    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (practiceArea.style.display === 'none') return;
         if (reviewSection.style.display === 'block') return;
@@ -126,7 +119,6 @@ async function loadVocabulary() {
     const endIndex = parseInt(endIndexInput.value);
     const csvPath = `./Set ${currentSet}/Part ${currentPart}/sentences.csv`;
     
-    // Validate indices
     if (isNaN(startIndex) || isNaN(endIndex) || startIndex < 1 || endIndex < 1) {
         alert('Please enter valid start and end indices (minimum 1).');
         return;
@@ -153,7 +145,7 @@ async function loadVocabulary() {
             rangeText.textContent = `${startIndex}-${endIndex}`;
             loadQuestion();
         } else {
-            alert(`No vocabulary data found in the selected range (${startIndex}-${endIndex}). Please check the indices.`);
+            alert(`No vocabulary data found in range ${startIndex}-${endIndex}. Check the indices.`);
         }
     } catch (error) {
         console.error('Error loading CSV:', error);
@@ -170,7 +162,6 @@ function parseCSV(csvText, startIndex, endIndex) {
         return;
     }
     
-    // Check if first row is header
     const firstRow = rows[0];
     const isHeader = firstRow.some(cell => 
         cell.toLowerCase().includes('id') || 
@@ -196,18 +187,13 @@ function parseCSV(csvText, startIndex, endIndex) {
         }
     }
     
-    console.log(`Loaded ${vocabulary.length} total words`);
-    
-    // Filter vocabulary by the selected range (1-based indices)
     selectedVocabulary = [];
     for (let i = 0; i < vocabulary.length; i++) {
-        const wordIndex = i + 1; // Convert to 1-based index
+        const wordIndex = i + 1;
         if (wordIndex >= startIndex && wordIndex <= endIndex) {
             selectedVocabulary.push(vocabulary[i]);
         }
     }
-    
-    console.log(`Selected ${selectedVocabulary.length} words from range ${startIndex}-${endIndex}`);
 }
 
 function parseCSVLines(csvText) {
@@ -268,16 +254,13 @@ function parseCSVLine(line) {
 }
 
 function generateQuestions() {
-    // Create a queue of questions from the selected range
     questions = [...selectedVocabulary];
-    // Shuffle questions for random order
     for (let i = questions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [questions[i], questions[j]] = [questions[j], questions[i]];
     }
     currentQuestionIndex = 0;
     
-    // Initialize remaining words (all selected words start as not mastered)
     remainingWords.clear();
     selectedVocabulary.forEach(word => {
         remainingWords.add(word.english);
@@ -285,7 +268,6 @@ function generateQuestions() {
 }
 
 function loadQuestion() {
-    // Check if we've completed all questions or all words are mastered
     if (currentQuestionIndex >= questions.length || remainingWords.size === 0) {
         completePractice();
         return;
@@ -297,10 +279,8 @@ function loadQuestion() {
     answerInput.disabled = false;
     answerInput.focus();
     
-    // Always Chinese to English
     questionText.innerHTML = `What is the English word for?`;
-    // Remove any existing display
-    const existingDisplay = questionText.querySelector('.chinese-display, .english-display');
+    const existingDisplay = questionText.querySelector('.chinese-display');
     if (existingDisplay) existingDisplay.remove();
     
     const chineseDiv = document.createElement('div');
@@ -311,11 +291,10 @@ function loadQuestion() {
     hintArea.innerHTML = `
         <div class="sentence-hint">
             ${currentQuestion.type ? `<p>📖 <strong>Word type:</strong> ${escapeHtml(currentQuestion.type)}</p>` : ''}
-            ${currentQuestion.sentence1 ? `<p>💡 <strong>Hint:</strong> REMOVED AFTER V4</p>` : ''}
+            ${currentQuestion.sentence1 ? `<p>💡 <strong>Hint:</strong> ${escapeHtml(currentQuestion.sentence1)}</p>` : ''}
         </div>
     `;
     
-    // Reset UI
     feedbackArea.style.display = 'none';
     nextBtn.style.display = 'none';
     checkBtn.style.display = 'inline-block';
@@ -336,15 +315,12 @@ function checkAnswer() {
     }
     
     const correctAnswer = currentQuestion.english;
-    // Case insensitive comparison for English
     const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
     
-    // Update score
     if (isCorrect) {
         score.correct++;
         showFeedback(`✓ Correct! "${correctAnswer}" is right!`, 'correct');
         
-        // Remove from remaining words if mastered
         if (remainingWords.has(currentQuestion.english)) {
             remainingWords.delete(currentQuestion.english);
         }
@@ -373,11 +349,9 @@ function nextQuestion() {
     if (currentQuestionIndex < questions.length && remainingWords.size > 0) {
         loadQuestion();
     } else if (remainingWords.size > 0) {
-        // If we still have remaining words but ran out of questions, generate new round with remaining words
         const remainingWordsList = selectedVocabulary.filter(word => remainingWords.has(word.english));
         if (remainingWordsList.length > 0) {
             questions = [...remainingWordsList];
-            // Shuffle
             for (let i = questions.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [questions[i], questions[j]] = [questions[j], questions[i]];
@@ -399,11 +373,9 @@ function completePractice() {
     finalTotalSpan.textContent = score.total;
     finalAccuracySpan.textContent = accuracy.toFixed(1);
     
-    // Update score colors in final stats
     updateScoreColor(finalCorrectSpan, (score.correct / score.total * 100));
     updateScoreColor(finalAccuracySpan, accuracy);
     
-    // Generate review list
     const wrongAnswers = score.answers.filter(a => !a.correct);
     if (wrongAnswers.length === 0) {
         reviewList.innerHTML = '<p style="padding:20px;">🎉 Perfect! No words to review! 🎉</p>';
@@ -447,7 +419,6 @@ function updateStats() {
     accuracySpan.textContent = accuracy.toFixed(1);
     remainingCountSpan.textContent = remainingWords.size;
     
-    // Update colors based on accuracy
     updateScoreColor(accuracySpan, accuracy);
     updateScoreColor(correctCountSpan, accuracy);
     
@@ -471,5 +442,4 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Start the application
 initializeSelectors();
