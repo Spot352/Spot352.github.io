@@ -3,390 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Vocabulary Practice Mode - Test Your Knowledge</title>
+        <title>Vocabulary Practice Mode - Chinese to English</title>
         <link rel="stylesheet" href="styles.css">
-        <style>
-        /* Additional styles specific to practice mode */
-        .practice-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .question-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .question-text {
-            font-size: 1.8em;
-            color: #333;
-            margin-bottom: 20px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-
-        .chinese-display {
-            font-size: 1.5em;
-            color: #764ba2;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            font-family: 'Noto Sans CJK SC', 'Microsoft YaHei', 'PingFang SC', sans-serif;
-            line-height: 1.5;
-            word-wrap: break-word;
-            white-space: normal;
-        }
-
-        .english-display {
-            font-size: 3em;
-            color: #667eea;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            font-weight: bold;
-            word-wrap: break-word;
-        }
-
-        .input-area {
-            margin: 30px 0;
-        }
-
-        .answer-input {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        .answer-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .options-area {
-            margin: 30px 0;
-            display: none;
-        }
-
-        .option-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            background: #f8f9fa;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 1.05em;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            font-weight: normal;
-            font-family: inherit;
-        }
-
-        .option-btn:hover:not(:disabled) {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-            transform: translateX(5px);
-        }
-
-        .option-btn.correct {
-            background: #48bb78;
-            color: white;
-            border-color: #38a169;
-        }
-
-        .option-btn.wrong {
-            background: #f56565;
-            color: white;
-            border-color: #e53e3e;
-            text-decoration: line-through;
-        }
-
-        .option-btn.selected {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .option-btn.disabled {
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .feedback-area {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            animation: fadeIn 0.3s;
-        }
-
-        .feedback-correct {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .feedback-wrong {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-
-        .next-btn, .check-btn {
-            padding: 12px 30px;
-            font-size: 1.1em;
-            margin: 10px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
-        }
-
-        .check-btn {
-            background: #667eea;
-            color: white;
-        }
-
-        .next-btn {
-            background: #48bb78;
-            color: white;
-        }
-
-        .next-btn:hover, .check-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .progress-bar-container {
-            background: #e5e7eb;
-            border-radius: 10px;
-            height: 30px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            height: 100%;
-            transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        .score-stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-            padding: 15px;
-            background: white;
-            border-radius: 15px;
-        }
-
-        .score-item {
-            text-align: center;
-        }
-
-        .score-value {
-            font-size: 2em;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-
-        .score-value.excellent {
-            color: #006400;
-        }
-
-        .score-value.good {
-            color: #228b22;
-        }
-
-        .score-value.average {
-            color: #ffd700;
-        }
-
-        .score-value.poor {
-            color: #ff0000;
-        }
-
-        .score-label {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .mode-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .mode-btn {
-            padding: 10px 20px;
-            background: white;
-            border: 2px solid #667eea;
-            color: #667eea;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
-        }
-
-        .mode-btn.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .mode-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .sentence-hint {
-            background: #fef3c7;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: left;
-            border-left: 4px solid #f59e0b;
-        }
-
-        .sentence-hint p {
-            margin: 8px 0;
-            color: #92400e;
-            line-height: 1.5;
-        }
-
-        .sentence-hint strong {
-            color: #d97706;
-        }
-
-        .review-section {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .review-word-list {
-            max-height: 400px;
-            overflow-y: auto;
-            margin: 20px 0;
-        }
-
-        .review-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            margin: 8px 0;
-            background: #f8f9fa;
-            border-radius: 8px;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .review-item.correct {
-            background: #c6f6d5;
-        }
-
-        .review-item.wrong {
-            background: #fed7d7;
-        }
-
-        .review-word {
-            font-weight: bold;
-            color: #667eea;
-            min-width: 120px;
-        }
-
-        .review-meaning {
-            color: #764ba2;
-            min-width: 150px;
-        }
-
-        .review-answer {
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .restart-btn {
-            background: #ed8936;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .restart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .random-indicator {
-            background: #48bb78;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .shake {
-            animation: shake 0.3s ease-in-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .case-insensitive {
-            font-size: 0.8em;
-            color: #999;
-            margin-top: 5px;
-        }
-    </style>
     </head>
     <body>
         <div class="container practice-container">
-            <!-- Add this navigation bar to learn.html -->
             <div class="nav-bar">
                 <a href="index.html" class="nav-link">🏠 Home</a>
                 <span class="nav-current">✏️ Practice Mode</span>
@@ -395,8 +16,9 @@
 
             <div class="header">
                 <h1>✏️ Vocabulary Practice Mode</h1>
-                <p>Type your answers - Test your knowledge</p>
+                <p>Chinese → English - Select a range of words to practice</p>
             </div>
+
             <!-- File Selector Section -->
             <div class="selector-section">
                 <div class="selector-group">
@@ -410,6 +32,14 @@
                     <select id="partSelect">
                         <option value="1">Part 1</option>
                     </select>
+                </div>
+                <div class="selector-group">
+                    <label for="startIndex">Start Index:</label>
+                    <input type="number" id="startIndex" value="1" min="1" style="width: 70px; padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em;">
+                </div>
+                <div class="selector-group">
+                    <label for="endIndex">End Index:</label>
+                    <input type="number" id="endIndex" value="10" min="1" style="width: 70px; padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em;">
                 </div>
                 <button id="loadBtn" class="btn-load">📖 Start Practice</button>
             </div>
@@ -441,43 +71,30 @@
                     <div class="progress-bar" id="progressBar">0%</div>
                 </div>
 
-                <!-- Mode Selector -->
-                <div class="mode-selector">
-                    <button class="mode-btn active" data-mode="random">🎲 Random
-                        (Mix)</button>
-                    <button class="mode-btn" data-mode="chinese">🇨🇳 中文 →
-                        English</button>
-                    <button class="mode-btn" data-mode="english">🇺🇸 English →
-                        中文</button>
+                <!-- Range Indicator -->
+                <div id="rangeIndicator" style="text-align: center; margin-bottom: 15px;">
+                    <span style="background: #667eea; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.85em;">
+                        📍 Practicing words <strong id="rangeText">1-10</strong> (Chinese → English)
+                    </span>
                 </div>
 
                 <!-- Question Card -->
                 <div class="question-card">
-                    <div id="randomIndicator" class="random-indicator"
-                        style="display:none;">🎲 Random Mode</div>
-                    <div class="question-text"
-                        id="questionText">Loading...</div>
+                    <div class="question-text" id="questionText">Loading...</div>
                     <div id="hintArea"></div>
                     <div class="input-area">
-                        <input type="text" id="answerInput" class="answer-input"
-                            placeholder="Type your answer here..."
-                            autocomplete="off">
-                        <div class="case-insensitive">💡 Tip: Case insensitive
-                            for English words</div>
+                        <input type="text" id="answerInput" class="answer-input" placeholder="Type the English word here..." autocomplete="off">
+                        <div class="case-insensitive">💡 Tip: Case insensitive for English words</div>
                     </div>
-                    <div class="feedback-area" id="feedbackArea"
-                        style="display:none;"></div>
+                    <div class="feedback-area" id="feedbackArea" style="display:none;"></div>
                     <div>
-                        <button class="check-btn" id="checkBtn">✓ Check
-                            Answer</button>
-                        <button class="next-btn" id="nextBtn"
-                            style="display:none;">→ Next Question</button>
+                        <button class="check-btn" id="checkBtn">✓ Check Answer</button>
+                        <button class="next-btn" id="nextBtn" style="display:none;">→ Next Question</button>
                     </div>
                 </div>
 
                 <!-- Review Section (hidden initially) -->
-                <div id="reviewSection" class="review-section"
-                    style="display:none;">
+                <div id="reviewSection" class="review-section" style="display:none;">
                     <h3>📊 Practice Complete!</h3>
                     <div class="score-stats">
                         <div class="score-item">
@@ -495,8 +112,7 @@
                     </div>
                     <h4>📝 Words to Review:</h4>
                     <div class="review-word-list" id="reviewList"></div>
-                    <button class="restart-btn" id="restartBtn">🔄 Practice
-                        Again</button>
+                    <button class="restart-btn" id="restartBtn">🔄 Practice Again</button>
                 </div>
             </div>
 

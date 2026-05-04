@@ -4,8 +4,8 @@ const PARTS = [5, 3, 3, 3, 2];
 
 // Global variables
 let vocabulary = [];
+let selectedVocabulary = []; // Words within the selected range
 let currentQuestion = null;
-let currentMode = 'chinese'; // 'random', 'chinese', 'english'
 let score = {
     correct: 0,
     total: 0,
@@ -15,11 +15,12 @@ let currentQuestionIndex = 0;
 let questions = [];
 let answered = false;
 let remainingWords = new Set(); // Track words not yet answered correctly
-let currentQuestionType = 'chinese'; // Track current question type
 
 // DOM elements
 const setSelect = document.getElementById('setSelect');
 const partSelect = document.getElementById('partSelect');
+const startIndexInput = document.getElementById('startIndex');
+const endIndexInput = document.getElementById('endIndex');
 const loadBtn = document.getElementById('loadBtn');
 const practiceArea = document.getElementById('practiceArea');
 const correctCountSpan = document.getElementById('correctCount');
@@ -38,8 +39,8 @@ const finalTotalSpan = document.getElementById('finalTotal');
 const finalAccuracySpan = document.getElementById('finalAccuracy');
 const reviewList = document.getElementById('reviewList');
 const restartBtn = document.getElementById('restartBtn');
-const randomIndicator = document.getElementById('randomIndicator');
 const answerInput = document.getElementById('answerInput');
+const rangeText = document.getElementById('rangeText');
 
 // Function to update score color based on percentage
 function updateScoreColor(element, percentage) {
@@ -56,91 +57,6 @@ function updateScoreColor(element, percentage) {
     }
 }
 
-// Function to check Chinese text similarity (60% match required)
-function isChineseMatch(userAnswer, correctAnswer) {
-    if (!userAnswer || !correctAnswer) return false;
-    
-    // Exact match
-    if (userAnswer === correctAnswer) return true;
-    
-    // Check for synonyms or common variations
-    const synonyms = {
-        '反的': ['相反的', '对立', '反面'],
-        '相反的': ['反的', '对立', '反面'],
-        '快乐': ['高兴', '愉快', '开心'],
-        '高兴': ['快乐', '愉快', '开心'],
-        '美丽': ['漂亮', '好看', '秀丽'],
-        '漂亮': ['美丽', '好看', '秀丽'],
-        '大': ['巨大', '庞大'],
-        '小': ['细小', '微小'],
-        '好': ['良好', '优秀'],
-        '坏': ['糟糕', '差'],
-        '快速': ['迅速', '飞快'],
-        '慢': ['缓慢', '迟缓']
-    };
-    
-    // Check if user answer matches any synonym of correct answer
-    if (synonyms[correctAnswer] && synonyms[correctAnswer].includes(userAnswer)) {
-        return true;
-    }
-    
-    // Check if correct answer is in user answer (for longer phrases)
-    if (correctAnswer.length > 2 && userAnswer.includes(correctAnswer)) {
-        return true;
-    }
-    
-    // Check if user answer is in correct answer (for longer phrases)
-    if (userAnswer.length > 2 && correctAnswer.includes(userAnswer)) {
-        return true;
-    }
-    
-    // Calculate similarity percentage
-    const similarity = calculateSimilarity(userAnswer, correctAnswer);
-    return similarity >= 0.6; // 60% match required
-}
-
-// Simple string similarity calculation
-function calculateSimilarity(str1, str2) {
-    if (!str1 || !str2) return 0;
-    
-    const longer = str1.length > str2.length ? str1 : str2;
-    const shorter = str1.length > str2.length ? str2 : str1;
-    
-    if (longer.length === 0) return 1.0;
-    
-    const editDistance = levenshteinDistance(longer, shorter);
-    return (longer.length - editDistance) / longer.length;
-}
-
-// Levenshtein distance for similarity calculation
-function levenshteinDistance(a, b) {
-    const matrix = [];
-    
-    for (let i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-    
-    for (let j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-    }
-    
-    for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(
-                    matrix[i - 1][j - 1] + 1,
-                    matrix[i][j - 1] + 1,
-                    matrix[i - 1][j] + 1
-                );
-            }
-        }
-    }
-    
-    return matrix[b.length][a.length];
-}
-
 // Initialize
 function initializeSelectors() {
     for (let i = 1; i <= SETS; i++) {
@@ -154,27 +70,6 @@ function initializeSelectors() {
     
     setSelect.addEventListener('change', updatePartSelector);
     loadBtn.addEventListener('click', loadVocabulary);
-    
-    // Mode switching
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            if (vocabulary.length === 0) return;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentMode = btn.getAttribute('data-mode');
-            
-            // Show/hide random indicator
-            if (currentMode === 'random') {
-                randomIndicator.style.display = 'inline-block';
-            } else {
-                randomIndicator.style.display = 'none';
-            }
-            
-            resetPractice();
-            generateQuestions();
-            loadQuestion();
-        });
-    });
     
     // Check button
     checkBtn.addEventListener('click', checkAnswer);
@@ -227,7 +122,20 @@ function updatePartSelector() {
 async function loadVocabulary() {
     const currentSet = parseInt(setSelect.value);
     const currentPart = parseInt(partSelect.value);
+    const startIndex = parseInt(startIndexInput.value);
+    const endIndex = parseInt(endIndexInput.value);
     const csvPath = `./Set ${currentSet}/Part ${currentPart}/sentences.csv`;
+    
+    // Validate indices
+    if (isNaN(startIndex) || isNaN(endIndex) || startIndex < 1 || endIndex < 1) {
+        alert('Please enter valid start and end indices (minimum 1).');
+        return;
+    }
+    
+    if (startIndex > endIndex) {
+        alert('Start index must be less than or equal to end index.');
+        return;
+    }
     
     try {
         const response = await fetch(csvPath);
@@ -236,18 +144,16 @@ async function loadVocabulary() {
         }
         
         const csvText = await response.text();
-        parseCSV(csvText);
+        parseCSV(csvText, startIndex, endIndex);
         
-        if (vocabulary.length > 0) {
+        if (selectedVocabulary.length > 0) {
             resetPractice();
             generateQuestions();
             practiceArea.style.display = 'block';
-            if (currentMode === 'random') {
-                randomIndicator.style.display = 'inline-block';
-            }
+            rangeText.textContent = `${startIndex}-${endIndex}`;
             loadQuestion();
         } else {
-            alert('No vocabulary data found in CSV file');
+            alert(`No vocabulary data found in the selected range (${startIndex}-${endIndex}). Please check the indices.`);
         }
     } catch (error) {
         console.error('Error loading CSV:', error);
@@ -255,11 +161,12 @@ async function loadVocabulary() {
     }
 }
 
-function parseCSV(csvText) {
+function parseCSV(csvText, startIndex, endIndex) {
     const rows = parseCSVLines(csvText);
     
     if (rows.length === 0) {
         vocabulary = [];
+        selectedVocabulary = [];
         return;
     }
     
@@ -271,13 +178,12 @@ function parseCSV(csvText) {
         cell.toLowerCase().includes('type')
     );
     
-    const startIndex = isHeader ? 1 : 0;
+    const startRow = isHeader ? 1 : 0;
     
     vocabulary = [];
-    for (let i = startIndex; i < rows.length; i++) {
+    for (let i = startRow; i < rows.length; i++) {
         const row = rows[i];
         if (row.length >= 4) {
-            // Trim each field individually
             vocabulary.push({
                 id: (row[0] || '').trim(),
                 english: (row[1] || '').trim(),
@@ -290,7 +196,18 @@ function parseCSV(csvText) {
         }
     }
     
-    console.log(`Loaded ${vocabulary.length} words`);
+    console.log(`Loaded ${vocabulary.length} total words`);
+    
+    // Filter vocabulary by the selected range (1-based indices)
+    selectedVocabulary = [];
+    for (let i = 0; i < vocabulary.length; i++) {
+        const wordIndex = i + 1; // Convert to 1-based index
+        if (wordIndex >= startIndex && wordIndex <= endIndex) {
+            selectedVocabulary.push(vocabulary[i]);
+        }
+    }
+    
+    console.log(`Selected ${selectedVocabulary.length} words from range ${startIndex}-${endIndex}`);
 }
 
 function parseCSVLines(csvText) {
@@ -335,7 +252,6 @@ function parseCSVLine(line) {
         }
         
         if (char === ',' && !inQuotes) {
-            // Trim whitespace from the field
             result.push(currentField.trim());
             currentField = '';
             i++;
@@ -346,15 +262,14 @@ function parseCSVLine(line) {
         i++;
     }
     
-    // Push the last field and trim whitespace
     result.push(currentField.trim());
     
     return result;
 }
 
 function generateQuestions() {
-    // Create a queue of questions that repeats until all words are mastered
-    questions = [...vocabulary];
+    // Create a queue of questions from the selected range
+    questions = [...selectedVocabulary];
     // Shuffle questions for random order
     for (let i = questions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -362,9 +277,9 @@ function generateQuestions() {
     }
     currentQuestionIndex = 0;
     
-    // Initialize remaining words (all words start as not mastered)
+    // Initialize remaining words (all selected words start as not mastered)
     remainingWords.clear();
-    vocabulary.forEach(word => {
+    selectedVocabulary.forEach(word => {
         remainingWords.add(word.english);
     });
 }
@@ -379,53 +294,26 @@ function loadQuestion() {
     currentQuestion = questions[currentQuestionIndex];
     answered = false;
     answerInput.value = '';
+    answerInput.disabled = false;
     answerInput.focus();
     
-    // Determine question type based on mode
-    if (currentMode === 'random') {
-        // Randomly choose between Chinese->English and English->Chinese
-        currentQuestionType = Math.random() < 0.5 ? 'chinese' : 'english';
-    } else if (currentMode === 'chinese') {
-        currentQuestionType = 'chinese';
-    } else {
-        currentQuestionType = 'english';
-    }
+    // Always Chinese to English
+    questionText.innerHTML = `What is the English word for?`;
+    // Remove any existing display
+    const existingDisplay = questionText.querySelector('.chinese-display, .english-display');
+    if (existingDisplay) existingDisplay.remove();
     
-    // Display question
-    if (currentQuestionType === 'chinese') {
-        questionText.innerHTML = `What is the English word for?`;
-        const chineseDiv = document.createElement('div');
-        chineseDiv.className = 'chinese-display';
-        chineseDiv.innerHTML = escapeHtml(currentQuestion.chinese);
-        // Clear and add new content
-        const existingDisplay = questionText.querySelector('.chinese-display, .english-display');
-        if (existingDisplay) existingDisplay.remove();
-        questionText.appendChild(chineseDiv);
-        
-        hintArea.innerHTML = `
-            <div class="sentence-hint">
-                <p>💡 <strong>Example sentence:</strong></p>
-                <p>(Hint removed after version 4)</p>
-                ${currentQuestion.type ? `<p>📖 <strong>Word type:</strong> ${escapeHtml(currentQuestion.type)}</p>` : ''}
-            </div>
-        `;
-    } else if (currentQuestionType === 'english') {
-        questionText.innerHTML = `What is the Chinese meaning of?`;
-        const englishDiv = document.createElement('div');
-        englishDiv.className = 'english-display';
-        englishDiv.innerHTML = escapeHtml(currentQuestion.english);
-        const existingDisplay = questionText.querySelector('.chinese-display, .english-display');
-        if (existingDisplay) existingDisplay.remove();
-        questionText.appendChild(englishDiv);
-        
-        hintArea.innerHTML = `
-            <div class="sentence-hint">
-                <p>💡 <strong>Example sentence:</strong></p>
-                <p>${escapeHtml(currentQuestion.sentence1)}</p>
-                ${currentQuestion.type ? `<p>📖 <strong>Word type:</strong> ${escapeHtml(currentQuestion.type)}</p>` : ''}
-            </div>
-        `;
-    }
+    const chineseDiv = document.createElement('div');
+    chineseDiv.className = 'chinese-display';
+    chineseDiv.innerHTML = escapeHtml(currentQuestion.chinese);
+    questionText.appendChild(chineseDiv);
+    
+    hintArea.innerHTML = `
+        <div class="sentence-hint">
+            ${currentQuestion.type ? `<p>📖 <strong>Word type:</strong> ${escapeHtml(currentQuestion.type)}</p>` : ''}
+            ${currentQuestion.sentence1 ? `<p>💡 <strong>Hint:</strong> REMOVED AFTER V4</p>` : ''}
+        </div>
+    `;
     
     // Reset UI
     feedbackArea.style.display = 'none';
@@ -447,18 +335,9 @@ function checkAnswer() {
         return;
     }
     
-    let correctAnswer = '';
-    let isCorrect = false;
-    
-    if (currentQuestionType === 'chinese') {
-        correctAnswer = currentQuestion.english;
-        // Case insensitive comparison for English
-        isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
-    } else {
-        correctAnswer = currentQuestion.chinese;
-        // Fuzzy matching for Chinese (60% threshold)
-        isCorrect = isChineseMatch(userAnswer, correctAnswer);
-    }
+    const correctAnswer = currentQuestion.english;
+    // Case insensitive comparison for English
+    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
     
     // Update score
     if (isCorrect) {
@@ -478,8 +357,7 @@ function checkAnswer() {
         word: currentQuestion,
         correct: isCorrect,
         userAnswer: userAnswer,
-        correctAnswer: correctAnswer,
-        questionType: currentQuestionType
+        correctAnswer: correctAnswer
     });
     
     updateStats();
@@ -492,12 +370,11 @@ function checkAnswer() {
 
 function nextQuestion() {
     currentQuestionIndex++;
-    answerInput.disabled = false;
     if (currentQuestionIndex < questions.length && remainingWords.size > 0) {
         loadQuestion();
     } else if (remainingWords.size > 0) {
         // If we still have remaining words but ran out of questions, generate new round with remaining words
-        const remainingWordsList = vocabulary.filter(word => remainingWords.has(word.english));
+        const remainingWordsList = selectedVocabulary.filter(word => remainingWords.has(word.english));
         if (remainingWordsList.length > 0) {
             questions = [...remainingWordsList];
             // Shuffle
@@ -536,8 +413,8 @@ function completePractice() {
             const item = document.createElement('div');
             item.className = 'review-item wrong';
             item.innerHTML = `
-                <span class="review-word">${escapeHtml(answer.word.english)}</span>
-                <span class="review-meaning">${escapeHtml(answer.word.chinese)}</span>
+                <span class="review-word">${escapeHtml(answer.word.chinese)}</span>
+                <span class="review-meaning">${escapeHtml(answer.word.english)}</span>
                 <span class="review-answer">You answered: ${escapeHtml(answer.userAnswer)}</span>
             `;
             reviewList.appendChild(item);
@@ -574,7 +451,7 @@ function updateStats() {
     updateScoreColor(accuracySpan, accuracy);
     updateScoreColor(correctCountSpan, accuracy);
     
-    const totalQuestions = vocabulary.length;
+    const totalQuestions = selectedVocabulary.length;
     const answeredCount = score.total;
     const progress = totalQuestions > 0 ? (answeredCount / totalQuestions * 100) : 0;
     progressBar.style.width = `${progress}%`;
