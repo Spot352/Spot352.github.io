@@ -16,7 +16,7 @@
 
             <div class="header">
                 <h1>✏️ Vocabulary Practice Mode</h1>
-                <p>Chinese → English - Select a range of words to practice</p>
+                <p>Chinese → English - Choose a specific part or enter a range</p>
             </div>
 
             <!-- File Selector Section -->
@@ -35,11 +35,11 @@
                 </div>
                 <div class="selector-group">
                     <label for="startIndex">Start Index:</label>
-                    <input type="number" id="startIndex" value="1" min="1" style="width: 70px; padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em;">
+                    <input type="number" id="startIndex" value="1" min="1">
                 </div>
                 <div class="selector-group">
                     <label for="endIndex">End Index:</label>
-                    <input type="number" id="endIndex" value="10" min="1" style="width: 70px; padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em;">
+                    <input type="number" id="endIndex" value="10" min="1">
                 </div>
                 <button id="loadBtn" class="btn-load">📖 Start Practice</button>
             </div>
@@ -72,8 +72,8 @@
                 </div>
 
                 <!-- Range Indicator -->
-                <div id="rangeIndicator" style="text-align: center; margin-bottom: 15px;">
-                    <span style="background: #667eea; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.85em;">
+                <div id="rangeIndicator">
+                    <span>
                         📍 Practicing words <strong id="rangeText">1-10</strong> (Chinese → English)
                     </span>
                 </div>
