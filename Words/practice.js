@@ -1,6 +1,6 @@
 // Configuration
-const SETS = 5;
-const PARTS = [5, 3, 3, 3, 2];
+const SETS = 6;
+const PARTS = [5, 3, 3, 3, 2, 1];
 
 // Global variables
 let vocabulary = [];
