@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haven · Complete Chat · All Chapters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1724;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'SF Pro Text', 'Inter', sans-serif;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .chat-container {
+            max-width: 900px;
+            width: 100%;
+            background: #f7f9fc;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #1e2a3e;
+            padding: 1.2rem 1.8rem;
+            border-bottom: 1px solid #2d3e54;
+        }
+
+        .chat-header h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #e9f1fb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chat-header h1 span {
+            background: #2c3e4e;
+            padding: 4px 14px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #9ab3cf;
+        }
+
+        .chat-header p {
+            font-size: 0.8rem;
+            color: #7e95b0;
+            margin-top: 8px;
+        }
+
+        .status-bar {
+            background: #eef2f8;
+            padding: 0.5rem 1.8rem;
+            font-size: 0.75rem;
+            color: #4a627a;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chapter-nav {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        .chapter-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: #2d3e5a;
+            transition: all 0.2s;
+        }
+
+        .chapter-btn:hover {
+            background: #cbd5e1;
+        }
+
+        .chapter-btn.active {
+            background: #1e2a3e;
+            color: white;
+        }
+
+        .chat-log {
+            padding: 1.8rem 1.5rem 2rem;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 88%;
+            animation: fadeSlideUp 0.2s ease-out;
+        }
+
+        .message-user {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            background: #eef2f8;
+            border-radius: 20px;
+            padding: 0.65rem 1rem;
+            color: #1e2a3a;
+            font-size: 0.94rem;
+            line-height: 1.45;
+            word-break: break-word;
+            white-space: pre-wrap;
+            font-family: 'SF Mono', ui-monospace, 'Cascadia Code', monospace;
+        }
+
+        .system-message {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #7c8ea0;
+            background: #f0f2f5;
+            padding: 0.4rem 0.8rem;
+            border-radius: 40px;
+            width: fit-content;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+
+        .username {
+            font-weight: 650;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+            margin-left: 8px;
+            color: #2c3e66;
+        }
+
+        .chapter-divider {
+            text-align: center;
+            margin: 0.5rem 0 1rem 0;
+            position: relative;
+        }
+
+        .chapter-divider span {
+            background: #1e2a3e;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #e9f1fb;
+            letter-spacing: 0.5px;
+        }
+
+        /* User colors */
+        .user-mira .message-bubble { background: #e1f0fa; border-left: 3px solid #2c7cb6; }
+        .user-sid .message-bubble { background: #e9eef5; border-left: 3px solid #4b5563; }
+        .user-lina .message-bubble { background: #feeed6; border-left: 3px solid #e09d32; }
+        .user-eli .message-bubble { background: #e9f0ec; border-left: 3px solid #2f6b47; }
+        .user-jon .message-bubble { background: #e7ecf5; border-left: 3px solid #4f5b73; }
+        .user-caspian_q .message-bubble { background: #eaf4f0; border-left: 3px solid #3b7b6e; }
+        .user-guest_47 .message-bubble { background: #ecf3fa; border-left: 3px solid #8ba0bc; }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            background: #f1f5f9;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.7rem;
+            color: #5c6f87;
+            border-top: 1px solid #e2edf7;
+            text-align: center;
+        }
+
+        .loading, .debug-info {
+            text-align: center;
+            padding: 2rem;
+            color: #7c8ea0;
+        }
+
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: #b91c1c;
+            background: #fee2e2;
+            border-radius: 20px;
+            margin: 1rem;
+        }
+
+        .debug-panel {
+            background: #1a1f2e;
+            color: #a5f3c3;
+            font-family: monospace;
+            font-size: 0.7rem;
+            padding: 0.8rem;
+            margin: 0.5rem;
+            border-radius: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-header">
+        <h1>📡 haven.chat <span>full archive</span></h1>
+        <p>quiet conversations · 3am echoes · whispers & tomoroww</p>
+    </div>
+    <div class="status-bar">
+        <span>📄 reading: <strong id="filename">loading...</strong></span>
+        <div class="chapter-nav" id="chapterNav"></div>
+    </div>
+    <div class="chat-log" id="chatMessages">
+        <div class="loading">📖 loading chapters from a.chat ...</div>
+    </div>
+    <div id="debugPanel" class="debug-panel" style="display: none;"></div>
+    <footer>⚡ all chapters · every message preserved</footer>
+</div>
+
+<script>
+    let fullLogText = '';
+    let chaptersData = [];
+    let currentChapterIdx = 0;
+    let debugMode = false;
+
+    const chatContainer = document.getElementById('chatMessages');
+    const filenameSpan = document.getElementById('filename');
+    const chapterNav = document.getElementById('chapterNav');
+    const debugPanel = document.getElementById('debugPanel');
+
+    function debugLog(msg) {
+        if (!debugMode) return;
+        debugPanel.style.display = 'block';
+        debugPanel.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}\n`;
+        debugPanel.scrollTop = debugPanel.scrollHeight;
+    }
+
+    // Parse the raw log - handles the exact format from your example
+    function parseFullLog(text) {
+        const lines = text.split(/\r?\n/);
+        const allMessages = [];
+        let currentChapter = 1;
+        let currentChapterTitle = '';
+        let inChapter = false;
+        
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            let trimmed = line.trim();
+            
+            if (trimmed.length === 0) continue;
+            
+            // Match "Chapter X: Title" - handles various formats
+            let chapterMatch = trimmed.match(/^Chapter\s+(\d+):\s*(.*)$/i);
+            if (chapterMatch) {
+                currentChapter = parseInt(chapterMatch[1]);
+                currentChapterTitle = chapterMatch[2] || `Chapter ${currentChapter}`;
+                inChapter = true;
+                
+                allMessages.push({
+                    type: 'chapter',
+                    chapterNum: currentChapter,
+                    title: currentChapterTitle,
+                    rawLine: trimmed
+                });
+                debugLog(`Found chapter ${currentChapter}: ${currentChapterTitle}`);
+                continue;
+            }
+            
+            // Match "[System Message: ...]"
+            let sysMatch = trimmed.match(/^\[System Message:\s*(.*?)\]\s*$/i);
+            if (sysMatch) {
+                allMessages.push({
+                    type: 'system',
+                    content: sysMatch[1],
+                    chapter: currentChapter,
+                    rawLine: trimmed
+                });
+                continue;
+            }
+            
+            // Match "[Admin Log ...]"
+            if (trimmed.match(/^\[Admin Log/i)) {
+                allMessages.push({
+                    type: 'system',
+                    content: `📋 ${trimmed.replace(/[\[\]]/g, '')}`,
+                    chapter: currentChapter,
+                    rawLine: trimmed
+                });
+                continue;
+            }
+            
+            // Match user messages: "Username: content"
+            let userMatch = trimmed.match(/^([A-Za-z0-9_]+):\s+(.*)$/);
+            if (userMatch) {
+                let username = userMatch[1];
+                let content = userMatch[2];
+                
+                // Handle muted user messages
+                if (content.includes('[This user is muted.]')) {
+                    allMessages.push({
+                        type: 'system',
+                        content: `🔇 ${username} is muted`,
+                        chapter: currentChapter,
+                        rawLine: trimmed
+                    });
+                } else {
+                    allMessages.push({
+                        type: 'user',
+                        username: username,
+                        content: content,
+                        chapter: currentChapter,
+                        rawLine: trimmed
+                    });
+                }
+                continue;
+            }
+            
+            // Handle "Guest_47: test" style (already covered by above)
+            
+            // Skip separators
+            if (trimmed === '---' || trimmed.match(/^---+$/)) {
+                continue;
+            }
+            
+            // Any other line - could be continuation or standalone
+            if (trimmed.length > 0 && !trimmed.match(/^\[/) && !trimmed.match(/^[A-Za-z0-9_]+:/)) {
+                allMessages.push({
+                    type: 'system',
+                    content: `✏️ ${trimmed}`,
+                    chapter: currentChapter,
+                    rawLine: trimmed
+                });
+            }
+        }
+        
+        debugLog(`Total parsed messages: ${allMessages.length}`);
+        return allMessages;
+    }
+    
+    // Group messages into chapters
+    function groupIntoChapters(messages) {
+        const chapters = [];
+        let currentChapterMsgs = [];
+        let currentChapterNum = 1;
+        let currentChapterTitle = '';
+        
+        for (let i = 0; i < messages.length; i++) {
+            const msg = messages[i];
+            
+            if (msg.type === 'chapter') {
+                // Save previous chapter if it has content
+                if (currentChapterMsgs.length > 0) {
+                    chapters.push({
+                        chapterNum: currentChapterNum,
+                        title: currentChapterTitle,
+                        messages: [...currentChapterMsgs]
+                    });
+                    debugLog(`Saved chapter ${currentChapterNum} with ${currentChapterMsgs.length} messages`);
+                }
+                // Start new chapter
+                currentChapterNum = msg.chapterNum;
+                currentChapterTitle = msg.title;
+                currentChapterMsgs = [];
+            } else {
+                // Only add non-chapter messages
+                if (msg.chapter === currentChapterNum || !msg.chapter) {
+                    msg.displayChapter = currentChapterNum;
+                    currentChapterMsgs.push(msg);
+                }
+            }
+        }
+        
+        // Push the last chapter
+        if (currentChapterMsgs.length > 0) {
+            chapters.push({
+                chapterNum: currentChapterNum,
+                title: currentChapterTitle,
+                messages: [...currentChapterMsgs]
+            });
+            debugLog(`Saved final chapter ${currentChapterNum} with ${currentChapterMsgs.length} messages`);
+        }
+        
+        return chapters;
+    }
+    
+    // Render a specific chapter
+    function renderChapter(chapterIndex) {
+        if (!chaptersData.length || chapterIndex >= chaptersData.length) {
+            chatContainer.innerHTML = `<div class="error">No chapters found. Chapter ${chapterIndex + 1} doesn't exist.</div>`;
+            return;
+        }
+        
+        const chapter = chaptersData[chapterIndex];
+        chatContainer.innerHTML = '';
+        
+        // Chapter header
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'chapter-divider';
+        headerDiv.innerHTML = `<span>📖 ${chapter.title} · ${chapter.messages.length} messages</span>`;
+        chatContainer.appendChild(headerDiv);
+        
+        // Render messages
+        let renderedCount = 0;
+        for (const msg of chapter.messages) {
+            if (msg.type === 'system') {
+                const sysDiv = document.createElement('div');
+                sysDiv.className = 'system-message';
+                sysDiv.innerText = msg.content;
+                chatContainer.appendChild(sysDiv);
+                renderedCount++;
+            } 
+            else if (msg.type === 'user') {
+                const msgDiv = document.createElement('div');
+                const usernameClass = `user-${msg.username.toLowerCase().replace(/[^a-z]/g, '')}`;
+                msgDiv.className = `message message-user ${usernameClass}`;
+                
+                const nameSpan = document.createElement('div');
+                nameSpan.className = 'username';
+                nameSpan.innerText = msg.username;
+                
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.className = 'message-bubble';
+                
+                let content = msg.content;
+                // Highlight whisper commands
+                if (content.startsWith('/whisper ')) {
+                    const whisperMatch = content.match(/^\/whisper\s+(\S+)\s+(.*)$/);
+                    if (whisperMatch) {
+                        content = `🔒 whisper → ${whisperMatch[1]}: ${whisperMatch[2]}`;
+                    }
+                }
+                bubbleDiv.innerText = content;
+                
+                msgDiv.appendChild(nameSpan);
+                msgDiv.appendChild(bubbleDiv);
+                chatContainer.appendChild(msgDiv);
+                renderedCount++;
+            }
+        }
+        
+        debugLog(`Rendered chapter ${chapter.chapterNum}: ${renderedCount} messages displayed`);
+        chatContainer.scrollTop = 0;
+        
+        // Update active button
+        document.querySelectorAll('.chapter-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === chapterIndex);
+        });
+    }
+    
+    // Create navigation buttons
+    function createNavButtons() {
+        chapterNav.innerHTML = '';
+        for (let i = 0; i < chaptersData.length; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'chapter-btn';
+            if (i === currentChapterIdx) btn.classList.add('active');
+            btn.innerText = `${chaptersData[i].chapterNum}`;
+            btn.title = chaptersData[i].title;
+            btn.addEventListener('click', () => {
+                currentChapterIdx = i;
+                renderChapter(currentChapterIdx);
+            });
+            chapterNav.appendChild(btn);
+        }
+        debugLog(`Created ${chaptersData.length} navigation buttons`);
+    }
+    
+    // Load file from server
+    async function loadFile(filename) {
+        try {
+            debugLog(`Attempting to load: ${filename}`);
+            const response = await fetch(filename);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const text = await response.text();
+            debugLog(`Successfully loaded ${filename}, ${text.length} characters`);
+            filenameSpan.innerText = filename;
+            return text;
+        } catch (error) {
+            debugLog(`Failed to load ${filename}: ${error.message}`);
+            return null;
+        }
+    }
+    
+    // Main initialization
+    async function init() {
+        // Try a.chat first, then a.txt
+        let content = await loadFile('a.chat');
+        if (!content) {
+            content = await loadFile('a.txt');
+        }
+        
+        if (!content) {
+            chatContainer.innerHTML = `<div class="error">
+                <strong>❌ Could not load chat file</strong><br><br>
+                Tried: a.chat, a.txt<br><br>
+                Make sure the file exists in the same directory as this HTML file.<br>
+                Running: python -m http.server 8000
+            </div>`;
+            return;
+        }
+        
+        fullLogText = content;
+        
+        // Parse and group
+        const allMessages = parseFullLog(fullLogText);
+        chaptersData = groupIntoChapters(allMessages);
+        
+        debugLog(`Total chapters detected: ${chaptersData.length}`);
+        
+        if (chaptersData.length === 0) {
+            chatContainer.innerHTML = `<div class="error">
+                No chapters found. Expected format:<br>
+                "Chapter 1: Title"<br>
+                "Username: message content"<br>
+                "[System Message: ...]"
+            </div>`;
+            return;
+        }
+        
+        // Display chapter count in header
+        const chapterCountSpan = document.querySelector('.chat-header h1 span');
+        if (chapterCountSpan) {
+            chapterCountSpan.innerText = `${chaptersData.length} chapters`;
+        }
+        
+        // Create navigation and render
+        createNavButtons();
+        currentChapterIdx = 0;
+        renderChapter(currentChapterIdx);
+        
+        // Show debug info (press D to toggle)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'd' || e.key === 'D') {
+                debugMode = !debugMode;
+                debugPanel.style.display = debugMode ? 'block' : 'none';
+                if (debugMode) {
+                    debugLog('Debug mode enabled');
+                    debugLog(`Total chapters: ${chaptersData.length}`);
+                    chaptersData.forEach((ch, i) => {
+                        debugLog(`  Chapter ${ch.chapterNum}: ${ch.messages.length} messages`);
+                    });
+                }
+            }
+        });
+    }
+    
+    // Start
+    init();
+</script>
+</body>
+</html>
