@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haven · Complete Chat · All Chapters</title>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Haven · Complete Chat · All Chapters</title>
+        <style>
         * {
             margin: 0;
             padding: 0;
@@ -222,25 +222,27 @@
             word-break: break-all;
         }
     </style>
-</head>
-<body>
-<div class="chat-container">
-    <div class="chat-header">
-        <h1>📡 haven.chat <span>full archive</span></h1>
-        <p>quiet conversations · 3am echoes · whispers & tomoroww</p>
-    </div>
-    <div class="status-bar">
-        <span>📄 reading: <strong id="filename">loading...</strong></span>
-        <div class="chapter-nav" id="chapterNav"></div>
-    </div>
-    <div class="chat-log" id="chatMessages">
-        <div class="loading">📖 loading chapters from a.chat ...</div>
-    </div>
-    <div id="debugPanel" class="debug-panel" style="display: none;"></div>
-    <footer>⚡ all chapters · every message preserved</footer>
-</div>
+    </head>
+    <body>
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1>📡 haven.chat <span>full archive</span></h1>
+                <p>quiet conversations · 3am echoes · whispers & tomoroww</p>
+            </div>
+            <div class="status-bar">
+                <span>📄 reading: <strong
+                        id="filename">loading...</strong></span>
+                <div class="chapter-nav" id="chapterNav"></div>
+            </div>
+            <div class="chat-log" id="chatMessages">
+                <div class="loading">📖 loading chapters from a.chat ...</div>
+            </div>
+            <div id="debugPanel" class="debug-panel"
+                style="display: none;"></div>
+            <footer>⚡ all chapters · every message preserved</footer>
+        </div>
 
-<script>
+        <script>
     let fullLogText = '';
     let chaptersData = [];
     let currentChapterIdx = 0;
@@ -306,6 +308,18 @@
                 allMessages.push({
                     type: 'system',
                     content: `📋 ${trimmed.replace(/[\[\]]/g, '')}`,
+                    chapter: currentChapter,
+                    rawLine: trimmed
+                });
+                continue;
+            }
+
+            // Match timestamp lines like "[Timestamp: 2:30 AM]"
+            let timestampMatch = trimmed.match(/^\[Timestamp:\s*(.*?)\]\s*$/i);
+            if (timestampMatch) {
+                allMessages.push({
+                    type: 'system',
+                    content: `⏱️ ${timestampMatch[1]}`,
                     chapter: currentChapter,
                     rawLine: trimmed
                 });
@@ -572,5 +586,5 @@
     // Start
     init();
 </script>
-</body>
+    </body>
 </html>
