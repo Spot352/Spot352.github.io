@@ -1,5 +1,5 @@
 // Configuration
-const SETS = 9;
+const SETS = 10;
 const PARTS = [5, 3, 3, 3, 2, 1, 1, 1, 1, 1];
 
 // Global variables
