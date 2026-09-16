@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recordings - Spot352</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .recording-card {
+            background: #f5f5f5;
+            border-left: 5px solid #FFD93D;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .recording-card h3 { margin: 0 0 8px 0; }
+        .recording-card .meta { font-size: 0.85em; color: #666; margin-bottom: 8px; }
+        .recording-card .content { white-space: pre-wrap; }
+        .label-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header-section">
+        <h1 class="main-title">📼 Recordings</h1>
+        <h4 class="subtitle">Your recorded notes and session logs</h4>
+    </header>
+
+    <main class="content-section">
+        <a href="index.html" class="history-link">← Back to Home</a>
+        <div id="recordings-list">Loading...</div>
+    </main>
+
+    <footer class="footer-section">
+        <p>&copy; 2026 Spot. All rights reserved.</p>
+    </footer>
+
+    <script>
+        async function loadRecordings() {
+            try {
+                const [labelsRes, recordingsRes] = await Promise.all([
+                    fetch('recordings-labels.json'),
+                    fetch('recordings/')
+                ]);
+            } catch (e) {
+                document.getElementById('recordings-list').innerHTML = '<p>No recordings found. Run sync-to-site.sh to upload recordings.</p>';
+                return;
+            }
+
+            // Load labels
+            let labels = {};
+            try {
+                const labelsData = await fetch('recordings-labels.json').then(r => r.json());
+                labelsData.forEach(l => labels[l.id] = l);
+            } catch (e) {}
+
+            // Load all recording JSON files
+            const container = document.getElementById('recordings-list');
+            container.innerHTML = '<p>Looking for recordings...</p>';
+
+            // Try to load each recording file
+            const recordings = [];
+            try {
+                const indexRes = await fetch('recordings-index.json');
+                const files = indexRes.ok ? await indexRes.text()
+                    .then(t => t.trim().split('\n')) : [];
+                for (const file of files) {
+                    try {
+                        const r = await fetch('recordings/' + file + '.json').then(res => {
+                            if (res.ok) return res.json();
+                            throw 'not found';
+                        });
+                        recordings.push(r);
+                    } catch (e) {}
+                }
+            } catch (e) {}
+
+            if (recordings.length === 0) {
+                container.innerHTML = '<p>No recordings found. Run <code>sync-to-site.sh</code> to upload your recordings.</p>';
+                return;
+            }
+
+            container.innerHTML = recordings.map(rec => {
+                const date = new Date(rec.recordedAt);
+                const labelTags = (rec.labels || []).map(lid => {
+                    const l = labels[lid];
+                    return l ? `<span class="label-tag" style="background:${l.color}20;color:${l.color}">${l.name}</span>` : '';
+                }).join('');
+                const ctx = JSON.parse(rec.context || '[]');
+                const content = ctx.map(b => b.data || '').join('\n');
+                return `
+                    <div class="recording-card">
+                        <h3>${rec.title}</h3>
+                        <div class="meta">${date.toLocaleDateString()} ${labelTags}</div>
+                        <div class="content">${content}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        loadRecordings();
+    </script>
+</body>
+</html>
