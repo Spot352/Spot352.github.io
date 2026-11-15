@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>MineC • Survival with friends</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#101912;color:#f3f1df;font-family:system-ui,sans-serif}body{display:flex;flex-direction:column}header{height:64px;display:flex;align-items:center;gap:18px;padding:0 24px;border-bottom:1px solid #374535;background:#18251b}header strong{letter-spacing:.13em}header span{color:#a8bda7;font-size:13px}button{background:#b5d781;border:0;border-radius:4px;color:#142012;padding:10px 18px;font-weight:700;cursor:pointer}button:disabled{opacity:.5}#fullscreen{margin-left:auto}main{position:relative;flex:1;min-height:0;display:grid;place-items:center}canvas{width:100%;height:100%;display:block;outline:none}#cover{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,#2a4228,#101912)}article{max-width:580px;padding:32px;text-align:center}h1{font-size:44px;letter-spacing:-.04em;margin:8px 0 20px}p{color:#bccbb4;line-height:1.65}small{color:#a0b59a}progress{width:100%;accent-color:#b5d781;height:12px;display:none;margin:20px 0}footer{padding:10px 24px;font-size:12px;color:#a0b59a;border-top:1px solid #374535}#error{white-space:pre-wrap;color:#ffb4a9}a{color:#d2e9b0}
+</style></head><body>
+<header><strong>MINEC</strong><span>8.2 · SURVIVAL SMP</span><button id="fullscreen" disabled>Full screen</button></header>
+<main><canvas id="unity-canvas" tabindex="0"></canvas><div id="cover"><article><small>A SHARED WORLD, BUILT TOGETHER</small><h1>Survive with friends.</h1><p>Gather, build, explore. Your shared world and character are saved on your host’s Mac.</p><p id="invitation">Open your host’s invitation link, then enter Multiplayer to join.</p><button id="play">Load game</button><progress id="progress" max="1" value="0"></progress><p id="status">Desktop browser · Keyboard and mouse</p><p id="error" role="alert"></p></article></div></main>
+<footer>WASD move · Mouse look · Space jump · E inventory · T chat · Esc menu &nbsp; | &nbsp; Keep the host’s Mac online.</footer>
+<script>
+'use strict';
+const canvas=document.getElementById('unity-canvas'), progress=document.getElementById('progress'), status=document.getElementById('status'), play=document.getElementById('play');
+if(new URLSearchParams(location.hash.slice(1)).get('server')) document.getElementById('invitation').textContent='Invitation received. Load the game, enter your name, then choose Join game.';
+let game;
+play.onclick=()=>{
+ play.disabled=true;progress.style.display='block';status.textContent='Downloading MineC…';
+ const script=document.createElement('script');script.src='Build/minec.loader.js';
+ const fail=message=>{document.getElementById('error').textContent=String(message);status.textContent='Unable to load. Reload to try again.';};
+ script.onerror=()=>fail('The game download could not be reached.');
+ script.onload=()=>createUnityInstance(canvas,{
+ dataUrl:'Build/minec.data.unityweb',frameworkUrl:'Build/minec.framework.js.unityweb',codeUrl:'Build/minec.wasm.unityweb',
+ autoSyncPersistentDataPath:true,streamingAssetsUrl:'StreamingAssets',companyName:"DefaultCompany",productName:"Minecraft - Unity Edition 1.0",productVersion:'8.2',
+ showBanner:(message,type)=>{if(type==='error')fail(message);}
+ },value=>{progress.value=value;status.textContent=value<.9?'Downloading MineC… '+Math.round(value*100)+'%':'Preparing the game…';})
+ .then(instance=>{game=instance;document.getElementById('cover').style.display='none';document.getElementById('fullscreen').disabled=false;canvas.focus();})
+ .catch(fail);
+ document.body.appendChild(script);
+};
+document.getElementById('fullscreen').onclick=()=>game&&game.SetFullscreen(1);
+</script></body></html>
